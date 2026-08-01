@@ -6,7 +6,7 @@ import path from "path";
 import { hostname } from "node:os"
 
 const server = http.createServer();
-const app = express(server);
+const app = express();          // <-- fixed: was express(server)
 const __dirname = process.cwd();
 const bareServer = createBareServer('/b/');
 
@@ -39,28 +39,15 @@ app.get('/index', (req, res) => {
     res.sendFile(path.join(process.cwd(), '/public/index.html'));
 });
 
-/* add your own extra urls like this:
-
-app.get('/pathOnYourSite', (req, res) => {
-    res.sendFile(path.join(process.cwd(), '/linkToItInYourSource'));
-});
-
-*/
-
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.on('listening', () => {
     const address = server.address();
-
     console.log("Listening on:");
     console.log(`\thttp://localhost:${address.port}`);
     console.log(`\thttp://${hostname()}:${address.port}`);
-    console.log(
-        `\thttp://${address.family === "IPv6" ? `[${address.address}]` : address.address
-        }:${address.port}`
-    );
 })
 
-server.listen({ port: PORT, })
+server.listen({ port: PORT })
 
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
